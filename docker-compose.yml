@@ -1,13 +1,15 @@
-version: '3.8'
+version: "3.8"
 
 services:
   admin:
     build:
       context: ./admin
       dockerfile: Dockerfile
-    command: uvicorn src.main:app --host 0.0.0.0 --port 5000
+    volumes:
+      - ./admin:/app:delegated
     ports:
       - 5000:5000
+    command: uvicorn src.main:app --host 0.0.0.0 --port 5000
     depends_on:
       - db
 
@@ -16,6 +18,7 @@ services:
     ports:
       - "5432:5432"
     environment:
+      - POSTGRES_DB=admin
       - POSTGRES_HOST_AUTH_METHOD="trust"
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres

@@ -36,3 +36,19 @@ def delete_product(db: Session, product_id: int):
         models.Product.id == product_id).first()
     db.delete(product)
     db.commit()
+
+
+def get_users(db: Session):
+    return db.query(models.User).all()
+
+
+def get_user(db: Session, user_id: int):
+    return db.query(models.User).filter(models.User.id == user_id)
+
+
+def create_user(db: Session, user: schemas.User):
+    user = models.User(name=user.name)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
