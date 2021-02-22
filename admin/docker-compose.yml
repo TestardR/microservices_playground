@@ -3,10 +3,10 @@ version: "3.8"
 services:
   admin:
     build:
-      context: ./admin
+      context: .
       dockerfile: Dockerfile
     volumes:
-      - ./admin:/app:delegated
+      - .:/app:delegated
     ports:
       - 5000:5000
     command: uvicorn src.main:app --host 0.0.0.0 --port 5000

@@ -22,18 +22,18 @@ def get_db():
         db.close()
 
 
-@app.get("/")
+@app.get("/api/")
 def main():
     return RedirectResponse(url="/docs/")
 
 
-@app.get("/users/", response_model=List[schemas.User])
+@app.get("/api/users/", response_model=List[schemas.User])
 def read_users(db: Session = Depends(get_db)):
     db_users = api.get_users(db)
     return db_users
 
 
-@app.get("/users/{user_id}", response_model=schemas.User)
+@app.get("/api/users/{user_id}", response_model=schemas.User)
 def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = api.get_user(db, user_id=user_id)
     if db_user is None:
@@ -41,23 +41,23 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     return db_user
 
 
-@app.post("/users/", response_model=schemas.User)
+@app.post("/api/users/", response_model=schemas.User)
 def create_user(user: schemas.User, db: Session = Depends(get_db)):
     return api.create_user(db=db, user=user)
 
 
-@app.get("/products/", response_model=List[schemas.Product])
+@app.get("/api/products/", response_model=List[schemas.Product])
 def read_products(db: Session = Depends(get_db)):
     db_products = api.get_products(db)
     return db_products
 
 
-@app.post("/products/", response_model=schemas.Product)
+@app.post("/api/products/", response_model=schemas.Product)
 def create_product(product: schemas.Product, db: Session = Depends(get_db)):
     return api.create_product(db=db, product=product)
 
 
-@app.get("/products/{product_id}", response_model=schemas.Product)
+@app.get("/api/products/{product_id}", response_model=schemas.Product)
 def read_product(product_id: int, db: Session = Depends(get_db)):
     db_product = api.get_product(db, product_id=product_id)
     if db_product is None:
@@ -65,7 +65,7 @@ def read_product(product_id: int, db: Session = Depends(get_db)):
     return db_product
 
 
-@app.put('/products/{product_id}', response_model=schemas.Product)
+@app.put('/api/products/{product_id}', response_model=schemas.Product)
 def update_product(product_id: int, product_data: schemas.Product, db: Session = Depends(get_db)):
     db_product = api.get_product(db, product_id=product_id)
     if db_product is None:
@@ -74,6 +74,6 @@ def update_product(product_id: int, product_data: schemas.Product, db: Session =
     return updated_product
 
 
-@app.delete('/products/{product_id}', response_model=schemas.Product)
+@app.delete('/api/products/{product_id}', response_model=schemas.Product)
 def delete_product(product_id: int, db: Session = Depends(get_db)):
     api.delete_product(db, product_id)
