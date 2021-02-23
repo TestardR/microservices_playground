@@ -7,6 +7,7 @@ import uvicorn
 
 from . import api, models, schemas
 from .database import SessionLocal, engine
+from .producer import publish
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -49,6 +50,7 @@ def create_user(user: schemas.User, db: Session = Depends(get_db)):
 @app.get("/api/products/", response_model=List[schemas.Product])
 def read_products(db: Session = Depends(get_db)):
     db_products = api.get_products(db)
+    publish()
     return db_products
 
 
@@ -77,3 +79,7 @@ def update_product(product_id: int, product_data: schemas.Product, db: Session =
 @app.delete('/api/products/{product_id}', response_model=schemas.Product)
 def delete_product(product_id: int, db: Session = Depends(get_db)):
     api.delete_product(db, product_id)
+
+
+if __name__ == "__main__":
+    uvicorn.run(app)

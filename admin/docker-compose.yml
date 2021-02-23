@@ -6,10 +6,18 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/app:delegated
+      - ./src:/app/src:delegated
     ports:
       - 5000:5000
-    command: uvicorn src.main:app --host 0.0.0.0 --port 5000
+    command: uvicorn src.main:app --host 0.0.0.0 --reload --port 5000
+    depends_on:
+      - db
+
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python ./src/consumer.py
     depends_on:
       - db
 
