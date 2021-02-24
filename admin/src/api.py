@@ -1,7 +1,8 @@
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from . import models, schemas
-
+from .producer import publish
 
 def get_products(db: Session):
     return db.query(models.Product).all()
@@ -12,23 +13,25 @@ def get_product(db: Session, product_id: int):
 
 
 def create_product(db: Session, product: schemas.Product):
-    product = models.Product(
+    db_product = models.Product(
         title=product.title, image=product.image, likes=product.likes)
-    db.add(product)
+    db.add(db_product)
     db.commit()
-    db.refresh(product)
+    db.refresh(db_product)
+    publish('product_created', jsonable_encoder(db_product))
     return product
 
 
 def update_product(db: Session, product_id: int, product_data: schemas.Product):
-    product = db.query(models.Product).filter(
+    db_product = db.query(models.Product).filter(
         models.Product.id == product_id).first()
-    product.title = product_data.title
-    product.image = product_data.image
-    product.likes = product_data.likes
+    db_product.title = product_data.title
+    db_product.image = product_data.image
+    db_product.likes = product_data.likes
     db.commit()
-    db.refresh(product)
-    return product
+    db.refresh(db_product)
+    publish('product_updated', jsonable_encoder(db_product))
+    return db_product
 
 
 def delete_product(db: Session, product_id: int):
@@ -36,6 +39,7 @@ def delete_product(db: Session, product_id: int):
         models.Product.id == product_id).first()
     db.delete(product)
     db.commit()
+    publish('product_deleted', product_id)
 
 
 def get_users(db: Session):

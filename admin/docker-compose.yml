@@ -11,22 +11,30 @@ services:
       - 5000:5000
     command: uvicorn src.main:app --host 0.0.0.0 --reload --port 5000
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   queue:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ./src:/app/src:delegated
     command: python ./src/consumer.py
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: postgres:10
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_DB=admin
       - POSTGRES_HOST_AUTH_METHOD="trust"
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

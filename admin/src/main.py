@@ -7,7 +7,6 @@ import uvicorn
 
 from . import api, models, schemas
 from .database import SessionLocal, engine
-from .producer import publish
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -23,7 +22,7 @@ def get_db():
         db.close()
 
 
-@app.get("/api/")
+@app.get("/")
 def main():
     return RedirectResponse(url="/docs/")
 
@@ -50,7 +49,6 @@ def create_user(user: schemas.User, db: Session = Depends(get_db)):
 @app.get("/api/products/", response_model=List[schemas.Product])
 def read_products(db: Session = Depends(get_db)):
     db_products = api.get_products(db)
-    publish()
     return db_products
 
 
