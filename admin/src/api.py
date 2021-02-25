@@ -1,8 +1,11 @@
+from random import randint
+
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from . import models, schemas
 from .producer import publish
+
 
 def get_products(db: Session):
     return db.query(models.Product).all()
@@ -44,6 +47,10 @@ def delete_product(db: Session, product_id: int):
 
 def get_users(db: Session):
     return db.query(models.User).all()
+
+
+def get_random_id():
+    return {"id": randint(0, 100)}
 
 
 def get_user(db: Session, user_id: int):

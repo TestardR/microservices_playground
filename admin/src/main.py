@@ -26,8 +26,11 @@ def get_db():
 def main():
     return RedirectResponse(url="/docs/")
 
+@app.get('/api/users/random')
+def read_random_user():
+    return api.get_random_id()
 
-@app.get("/api/users/", response_model=List[schemas.User])
+@app.get("/api/users/", response_model=schemas.User)
 def read_users(db: Session = Depends(get_db)):
     db_users = api.get_users(db)
     return db_users
